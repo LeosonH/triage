@@ -564,5 +564,4 @@ class HighMemoryCSVBuilder(CSVBuilder):
                     )
             i += 1
 
-        big_df = dataframes[1].join(dataframes[2:] + [dataframes[0]])
-        return big_df
+        return pandas.concat(dataframes[1:] + [dataframes[0]], axis=1)

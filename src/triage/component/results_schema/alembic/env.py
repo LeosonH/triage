@@ -31,7 +31,13 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-url = os.environ.get('DBURL', None)
+url = None
+
+if 'url' in config.attributes:
+    url = config.attributes['url']
+
+if not url:
+    url = os.environ.get('DBURL', None)
 
 if not url:
     db_config_file = (context.get_x_argument('db_config_file')

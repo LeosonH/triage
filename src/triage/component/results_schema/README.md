@@ -7,15 +7,19 @@ Store results of modeling runs in a relational database
 
 `pip install git+https://github.com/dssg/triage.git`
 
-2. Create a YAML file with your database credentials (see example_db_config.yaml), or an environment variable 'DBURL' with a connection string. The database must be created already.
+2. You can do the initial schema and table creation a couple of different ways, with a couple of different options for passing database credentials.
 
-3. Call 'upgrade_db' function from Python console or script
+	- *Triage cli script*. Assuming you have triage installed from pip: `triage upgrade_db -d dbcredentials.yaml`, or just `triage upgrade_db` if you have a database credentials file at `database.yaml` (the default)
+	- *From Python code*. If you are in a Python console or notebook, you can call `upgrade_db` with either sqlalchemy engine pointing to your database, or a filename similar to what's used to launch the cli script.
 
-```
->>> from triage.component.results_schema import upgrade_db
->>> upgrade_db('my_db_config.yaml')
-```
+	```
+	>>> from triage.component.results_schema import upgrade_db
+	>>> upgrade_db(engine)
+	>>> upgrade_db('database.yaml')
+	```
 
+	- *The alembic command*. Triage uses alembic for schema migrations (more on that below). You can use this command directly, but you just have to tell alembic about the triage environment and config. For simply upgrading the database this is probably the most complicated option to get going, though if you want to use other alembic functionality this is needed. `PYTHONPATH='./src' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml upgrade head`
+	
 This command will create a 'results' schema and the necessary tables.
 
 
@@ -27,11 +31,11 @@ This command will create a 'results' schema and the necessary tables.
 
 2. Make the desired modifications to [results_schema.schema](src/triage/component/results_schema/schema.py).
 
-3. From within the results schema directory, autogenerate a migration: `PYTHONPATH='../../../' alembic -c results_schema/alembic.ini -x db_config_file=my_db_config.yaml revision --autogenerate` - This will look at the difference between your schema definition and the database, and generate a new file in results_schema/alembic/versions/.
+3. From within the results schema directory, autogenerate a migration: `PYTHONPATH='./src' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml revision --autogenerate` - This will look at the difference between your schema definition and the database, and generate a new file in results_schema/alembic/versions/.
 
 4. Inspect the file generated in step 3 and make sure that the changes it is suggesting make sense. Make any modifications you want; the autogenerate functionality is just meant as a guideline.
 
-5. Upgrade the database: `PYTHONPATH='../../../' alembic -c alembic.ini -x db_config_file=my_db_config.yaml upgrade head`
+5. Upgrade the database: `PYTHONPATH='./src/' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml upgrade head`
 
 6. Update the [factories file](src/tests/results_tests/factories.py) with your changes - see more on factories below if you are unfamiliar with them.
 
