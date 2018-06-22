@@ -351,6 +351,21 @@ class FeatureGenerator(object):
         logging.info('Created %s tables', len(table_tasks.keys()))
         return table_tasks
 
+    def create_preimputed_features(self, feature_aggregation_config, feature_dates):
+        """Create only preimputed features for a set of dates"""
+        import pdb
+        pdb.set_trace()
+        self.process_table_tasks(
+            self.generate_all_table_tasks(
+                self.aggregations(
+                    feature_aggregation_config,
+                    feature_dates,
+                    state_table=None
+                ),
+                task_type='aggregation'
+            )
+        )
+
     def create_all_tables(self, feature_aggregation_config, feature_dates, state_table):
         """Create all feature tables.
 

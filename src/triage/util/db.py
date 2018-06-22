@@ -1,5 +1,20 @@
 import sqlalchemy
 import wrapt
+import yaml
+
+
+def dburl_from_filename(filename):
+    with open(filename) as fd:
+        config = yaml.load(fd)
+        dburl = sqlalchemy.engine.url.URL(
+            'postgres',
+            host=config['host'],
+            username=config['user'],
+            database=config['db'],
+            password=config['pass'],
+            port=config['port'],
+        )
+        return dburl
 
 
 class SerializableDbEngine(wrapt.ObjectProxy):
