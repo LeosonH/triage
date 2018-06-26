@@ -66,7 +66,7 @@ REVISION_MAPPING = {
     'v3': '7d57d1cf3429',
     'v4': '89a8ce240bae',
     'v5': '2446a931de7a',
-    '': '8b3f167d0418'
+    'pre-v1': '8b3f167d0418'
 }
 
 

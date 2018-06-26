@@ -1,0 +1,9 @@
+#!/bin/bash
+# A wrapper around the alembic command-line script that configures it with:
+# 1. The Triage PYTHONPATH
+# 2. The Triage alembic.ini
+# 3. The Triage database.yaml path
+#
+# All arguments are passed through to the installed 'alembic' command.
+
+PYTHONPATH='../' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml $@

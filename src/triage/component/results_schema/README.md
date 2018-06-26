@@ -18,24 +18,24 @@ Store results of modeling runs in a relational database
 	>>> upgrade_db('database.yaml')
 	```
 
-	- *The alembic command*. Triage uses alembic for schema migrations (more on that below). You can use this command directly, but you just have to tell alembic about the triage environment and config. For simply upgrading the database this is probably the most complicated option to get going, though if you want to use other alembic functionality this is needed. `PYTHONPATH='./src' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml upgrade head`
-	
 This command will create a 'results' schema and the necessary tables.
 
 
 ## Modifying the schema
 
-[Alembic](http://alembic.zzzcomputing.com/en/latest/tutorial.html) is a schema migrations library written in Python. It allows us to auto-generate migrations to run incremental database schema changes, such as adding or removing a column. This is done by comparing the definition of a schema in code with that of a live database. There are many valid ways to create migrations, which you can read about in [Alembic's documentation](http://alembic.zzzcomputing.com/en/latest/tutorial.html). But here is a common workflow we will use to modify the schema.
+To make modifications to the schema, you should be working in a cloned version of the repository.
 
-1. Have a candidate database for comparison. You can use a toy database for this that you upgrade to the current master, or use your project database if the results schema has not been manually modified.
+[Alembic](http://alembic.zzzcomputing.com/en/latest/tutorial.html) is a schema migrations library written in Python. It allows us to auto-generate migrations to run incremental database schema changes, such as adding or removing a column. This is done by comparing the definition of a schema in code with that of a live database. There are many valid ways to create migrations, which you can read about in [Alembic's documentation](http://alembic.zzzcomputing.com/en/latest/tutorial.html). But here is a common workflow we will use to modify the schema. Throughout, we'll use a wrapper script, `scripts/alembic`, bundled in the triage repository that wraps calls to the 'alembic' command with the correct options for running within triage. We'll only have a few examples here, but this script just passes all arguments to the 'alembic' command so if you know your way around alembic you can perform whatever operations you want there.
+
+1. Create a candidate database for comparison if you don't have one already. You can use a toy database for this, or use your project database if the results schema has not been manually modified. Populate `database.yaml` in the repo root with the credentials, and upgrade it to the current HEAD: `./scripts/alembic upgrade head`
 
 2. Make the desired modifications to [results_schema.schema](src/triage/component/results_schema/schema.py).
 
-3. From within the results schema directory, autogenerate a migration: `PYTHONPATH='./src' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml revision --autogenerate` - This will look at the difference between your schema definition and the database, and generate a new file in results_schema/alembic/versions/.
+3. From within the results schema directory, autogenerate a migration: `./scripts/alembic revision --autogenerate` - This will look at the difference between your schema definition and the database, and generate a new file in results_schema/alembic/versions/.
 
 4. Inspect the file generated in step 3 and make sure that the changes it is suggesting make sense. Make any modifications you want; the autogenerate functionality is just meant as a guideline.
 
-5. Upgrade the database: `PYTHONPATH='./src/' alembic -c src/triage/component/results_schema/alembic.ini -x db_config_file=database.yaml upgrade head`
+5. Upgrade the database: `./scripts/alembic upgrade head`
 
 6. Update the [factories file](src/tests/results_tests/factories.py) with your changes - see more on factories below if you are unfamiliar with them.
 
