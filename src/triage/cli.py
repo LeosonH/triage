@@ -34,7 +34,7 @@ class Experiment(Command):
         Use this if the database was created without an 'alembic_version' table. Uses the config version of your experiment to infer what database version is suitable.
         """
         revision = REVISION_MAPPING[args.configversion]
-        print(f"Based on config version {args.configversion} " +
+        print(f"Based on config version {args.configversion} "
               f"we think your results schema is version {revision} and are upgrading to it")
         logging.basicConfig(level=logging.INFO)
         stamp_db(revision, args.dbfile)
