@@ -6,6 +6,8 @@ from triage.component.results_schema import upgrade_db, stamp_db, REVISION_MAPPI
 
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 
 class Triage(RootCommand):
     """manage Triage database and experiments"""
@@ -24,7 +26,6 @@ class Experiment(Command):
     @cmdmethod
     def upgradedb(self, args):
         """Upgrade triage results database"""
-        logging.basicConfig(level=logging.INFO)
         upgrade_db(args.dbfile)
 
     @cmdmethod('configversion', choices=REVISION_MAPPING.keys(), help='config version of last experiment you ran')
@@ -36,7 +37,6 @@ class Experiment(Command):
         revision = REVISION_MAPPING[args.configversion]
         print(f"Based on config version {args.configversion} "
               f"we think your results schema is version {revision} and are upgrading to it")
-        logging.basicConfig(level=logging.INFO)
         stamp_db(revision, args.dbfile)
 
     @cmdmethod
